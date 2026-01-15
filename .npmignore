@@ -1,0 +1,37 @@
+# Ignore node modules and editor/tooling artifacts
+node_modules/
+**/node_modules/
+.bun/
+bun.lock
+npm-debug.log
+.yarnrc
+.pnpm-debug.log
+.pnpmfile.cjs
+
+# Editor and local files
+.vscode/
+.idea/
+.DS_Store
+
+# Opencode and local plans
+.opencode/
+.cursor/
+.ruler/
+
+# Build output should be published (dist), so do not ignore it here
+# Ignore large project local node_modules inside projects
+projects/*/node_modules/
+
+# Ignore test caches and coverage
+coverage/
+.cache/
+
+# Ignore Angular build cache
+.angular/cache/
+
+# Ignore generated lockfiles inside projects
+projects/*/bun.lock
+projects/*/package-lock.json
+
+# Ignore any other generated artifacts
+dist/tmp

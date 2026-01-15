@@ -1,0 +1,20 @@
+{
+  "rules": [
+    {
+      "filePathMatches": "**/*",
+      "rulesPaths": ".ruler/AGENTS.md"
+    },
+    {
+      "filePathMatches": "**/*",
+      "rulesPaths": ".ruler/angular.md"
+    },
+    {
+      "filePathMatches": "**/*",
+      "rulesPaths": ".ruler/bd.md"
+    },
+    {
+      "filePathMatches": "**/*",
+      "rulesPaths": ".ruler/llms-txt.md"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "bun_docs": {
+      "type": "remote",
+      "url": "https://bun.sh/docs/mcp",
+      "enabled": true,
+    },
+    "angular_docs": {
+      "type": "local",
+      "command": ["bunx", "-y", "@angular/cli", "mcp", "--read-only"],
+      "enabled": true,
+    },
+  },
+  "formatter": {
+    "oxfmt": {
+      "command": ["oxfmt", "--write", "$FILE"],
+      "extensions": [".js", ".jsx", ".ts", ".tsx"],
+    },
+  },
+}

@@ -1,0 +1,74 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db
+
+
+ # START Ruler Generated Files
+ /.agent/rules/ruler.md
+ /.aider.conf.yml
+ /.amazonq/mcp.json
+ /.amazonq/rules/ruler_q_rules.md
+ /.augment/rules/ruler_augment_instructions.md
+ /.clinerules
+ /.codex/config.toml
+ /.crush.json
+ /.goosehints
+ /.idx/airules.md
+ /.junie/guidelines.md
+ /.kilocode/rules/ruler_kilocode_instructions.md
+ /.kiro/steering/ruler_kiro_instructions.md
+ /.openhands/microagents/repo.md
+ /.roo/mcp.json
+ /.trae/rules/project_rules.md
+ /.vibe/config.toml
+ /AGENTS.md
+ /CLAUDE.md
+ /CRUSH.md
+ /WARP.md
+ /firebender.json
+ /opencode.json
+ # END Ruler Generated Files
+
+# Backups
+*.bak
