@@ -1,0 +1,50 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "bun",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "zero-angular": {
+      "projectType": "library",
+      "root": "projects/zero-angular",
+      "sourceRoot": "projects/zero-angular/src",
+      "prefix": "zero",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/zero-angular/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/zero-angular/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/zero-angular/tsconfig.spec.json"
+          }
+        },
+        "lint": {
+          "builder": "./builders:lint",
+          "options": {
+            "exclude": ["node_modules", "dist"]
+          }
+        },
+        "check": {
+          "builder": "./builders:tsgo",
+          "options": {
+            "tsConfig": "projects/zero-angular/tsconfig.lib.json",
+            "noEmit": true
+          }
+        }
+      }
+    }
+  }
+}

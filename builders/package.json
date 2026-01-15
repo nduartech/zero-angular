@@ -1,0 +1,6 @@
+{
+  "name": "zero-angular-builders",
+  "version": "0.0.0",
+  "description": "Custom builders for zero-angular",
+  "builders": "./builders.json"
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "OxlintBuilderSchema",
+  "title": "Oxlint Builder Options",
+  "type": "object",
+  "properties": {
+    "exclude": {
+      "type": "array",
+      "description": "Glob patterns to exclude from linting",
+      "default": ["node_modules"]
+    },
+    "fix": {
+      "type": "boolean",
+      "description": "Fix linting errors automatically",
+      "default": false
+    },
+    "maxWarnings": {
+      "type": "number",
+      "description": "Max warnings allowed before exit code 1",
+      "default": -1
+    },
+    "typeAware": {
+      "type": "boolean",
+      "description": "Enable type-aware linting using TypeScript compiler",
+      "default": true
+    },
+    "typeCheck": {
+      "type": "boolean",
+      "description": "Report TypeScript compiler diagnostics alongside linting results (requires typeAware to be true)",
+      "default": false
+    }
+  }
+}

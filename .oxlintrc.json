@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": ["@angular-eslint/eslint-plugin", "@angular-eslint/eslint-plugin-template"],
+  "plugins": ["typescript"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "warn"
+  },
+  "rules": {
+    "no-console": "warn",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/await-thenable": "error",
+    "typescript/no-misused-promises": [
+      "error",
+      {
+        "checksConditionals": true,
+        "checksVoidReturn": true
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/dist/**", "**/node_modules/**"],
+      "rules": {}
+    }
+  ]
+}

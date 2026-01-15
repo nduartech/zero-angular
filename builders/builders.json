@@ -1,0 +1,15 @@
+{
+  "$schema": "../node_modules/@angular-devkit/architect/builders/builders-schema.json",
+  "builders": {
+    "lint": {
+      "implementation": "./lint/index.js",
+      "schema": "./lint/schema.json",
+      "description": "Run oxlint on the project"
+    },
+    "tsgo": {
+      "implementation": "./tsgo/index.js",
+      "schema": "./tsgo/schema.json",
+      "description": "Compile TypeScript using typescript-go (tsgo)"
+    }
+  }
+}
