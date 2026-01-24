@@ -15,8 +15,7 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "@nathanld/zero-angular": ["./projects/zero-angular/src/public-api.ts"],
-      "@nathanld/zero-angular/effect": ["./projects/zero-angular/effect/src/public_api.ts"]
+      "@nathanld/zero-angular": ["./projects/zero-angular/src/public-api.ts"]
     }
   },
   "angularCompilerOptions": {
