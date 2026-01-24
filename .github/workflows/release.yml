@@ -73,7 +73,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: bunx changeset version
-          publish: bun run build && npm publish dist/zero-angular --access public
+          publish: bun run release
           createGithubReleases: true
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -15,7 +15,8 @@
     "changeset": "bunx changeset",
     "changeset:version": "bunx changeset version",
     "changeset:publish:dry": "bunx changeset publish --dry-run",
-    "changeset:publish": "bun run build && npm publish dist/zero-angular --access public",
+    "release": "bun run build && bunx changeset publish",
+    "changeset:publish": "bun run release",
     "prepare": "bunx ng build zero-angular"
   },
   "dependencies": {
