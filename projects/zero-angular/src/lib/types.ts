@@ -14,7 +14,12 @@ import type {
 } from '@rocicorp/zero';
 
 export interface QueryOptions {
-  readonly ttl?: TTL | undefined;
+  readonly ttl?: TTL | Signal<TTL | undefined> | undefined;
+  /**
+   * Optional stable key to deduplicate views across equivalent queries.
+   * If omitted, the library falls back to query object identity.
+   */
+  readonly key?: string | undefined;
 }
 
 export interface QueryResult<TReturn> {

@@ -1,6 +1,6 @@
 /**
- * Custom builder for TypeScript compilation using typescript-go
- * This builder allows using tsgo (TypeScript Go implementation) instead of tsc
+ * Custom builder for TypeScript typechecking.
+ * Uses `tsc` in no-emit mode.
  */
 
 const { createBuilder } = require('@angular-devkit/architect');
@@ -30,9 +30,9 @@ const addTsgoOptions = (args, options) => {
 
 const buildTsgoArgs = (options, context) => {
   const runner = getPackageRunner();
-  let cmd = 'npx tsgo';
+  let cmd = 'npx tsc';
   if (runner === 'bun') {
-    cmd = 'bun x tsgo';
+    cmd = 'bun x tsc';
   }
 
   // Get tsconfig path
@@ -41,6 +41,11 @@ const buildTsgoArgs = (options, context) => {
   const tsconfigPath = path.join(workspaceRoot, tsConfig);
 
   const args = [cmd, '-p', tsconfigPath];
+
+  // Default to noEmit for a "check" target unless explicitly overridden.
+  if (options?.noEmit !== false) {
+    args.push('--noEmit');
+  }
 
   addTsgoOptions(args, options);
 
@@ -52,16 +57,16 @@ const runTsgo = (args, context) => {
   const cwd = String(context.workspaceRoot);
   context.logger.info(`Running: ${finalArgs.join(' ')}`);
 
-  // Execute tsgo
+  // Execute tsc
   try {
     execSync(finalArgs.join(' '), {
       cwd,
       stdio: 'inherit',
     });
-    context.logger.info('TypeScript compilation succeeded');
+    context.logger.info('TypeScript typecheck succeeded');
     return { success: true };
   } catch (err) {
-    context.logger.error('TypeScript compilation failed:', err);
+    context.logger.error('TypeScript typecheck failed:', err);
     return { success: false };
   }
 };
@@ -71,7 +76,7 @@ const execute = async (options, context) => {
     const args = buildTsgoArgs(options, context);
     return runTsgo(args, context);
   } catch (error) {
-    context.logger.error(`Error running tsgo: ${error.message}`);
+    context.logger.error(`Error running tsc: ${error.message}`);
     return { success: false };
   }
 };

@@ -1,32 +1,28 @@
 # Zero Angular
 
-Angular integration for Zero by Rocicorp - reactive sync engine with complete feature parity to Zero SolidJS and Svelte libraries.
+Angular integration utilities for Zero by Rocicorp.
 
-## Features
-
-- ✅ **Complete API Parity** - Feature-complete with Zero SolidJS and Svelte
-- ✅ **Reactive Queries** - Angular signals for live-updating data
-- ✅ **Connection State** - Real-time connection monitoring
-- ✅ **Query Management** - Update and destroy query subscriptions
-- ✅ **Effect TS Integration** - Functional programming with Effect streams
-- ✅ **View Deduplication** - Efficient query caching and lifecycle management
-- ✅ **Type Safety** - Full TypeScript support with strict generics
+This package is published as `@nathanld/zero-angular`.
 
 ## Installation
 
 ```bash
-npm install zero-angular @rocicorp/zero effect
+npm install @nathanld/zero-angular @rocicorp/zero
+```
+
+Optional Effect integration:
+
+```bash
+npm install effect
 ```
 
 ## Setup
 
-### Configure Zero Provider
-
 In your `app.config.ts`:
 
-```typescript
-import { provideZero } from 'zero-angular';
-import { createSchema, table, string, number } from '@rocicorp/zero';
+```ts
+import { provideZero } from '@nathanld/zero-angular';
+import { createSchema, number, string, table } from '@rocicorp/zero';
 
 const schema = createSchema({
   tables: [
@@ -45,67 +41,41 @@ export const appConfig = {
 };
 ```
 
-## Promise-based API
+## Core API
 
-### Reactive Queries
+```ts
+import { injectConnectionState, injectQuery, injectZero } from '@nathanld/zero-angular';
 
-```typescript
-import { Component } from '@angular/core';
-import { injectZero, injectQuery, injectConnectionState } from 'zero-angular';
+const zero = injectZero();
+const connectionState = injectConnectionState();
 
-@Component({
-  selector: 'app-users',
-  template: `
-    @if (connectionState() === 'connected') {
-      <div>Connected ✅</div>
-    } @else {
-      <div>Disconnected ❌</div>
-    }
+const usersQuery = injectQuery(() => zero()?.query.users);
+const users = usersQuery.data;
+const details = usersQuery.details;
+```
 
-    @for (user of users(); track user.id) {
-      <div>{{ user.name }} ({{ user.age }})</div>
-    }
+`injectQuery` supports an optional dedupe key:
 
-    <button (click)="refreshUsers()">Refresh</button>
-    <button (click)="cleanup()">Cleanup</button>
-  `,
-})
-export class UsersComponent {
-  private zero = injectZero();
-
-  // Reactive query with update/destroy methods
-  private query = injectQuery(() => this.zero().query.users);
-  users = this.query.data;
-  details = this.query.details;
-
-  // Connection state
-  connectionState = injectConnectionState();
-
-  // Update query dynamically
-  refreshUsers() {
-    this.query.updateQuery(() => this.zero().query.users.where('active', true));
-  }
-
-  // Cleanup resources
-  cleanup() {
-    this.query.destroy();
-  }
-}
+```ts
+const usersQuery = injectQuery(() => zero()?.query.users, { key: 'users' });
 ```
 
 ### Advanced Query Operations
 
 ```typescript
-import { injectZero, ZeroService } from 'zero-angular';
+import { injectZero, ZeroService } from '@nathanld/zero-angular';
 
 @Component({...})
 export class AdvancedComponent {
   private zero = injectZero();
 
   async ngOnInit() {
-    // Preload data
-    const { cleanup, complete } = await this.zero().preload(
-      this.zero().query.users.where('active', true),
+    const z = this.zero();
+    if (!z) return;
+
+    // Preload data (returns synchronously)
+    const { cleanup, complete } = z.preload(
+      z.query.users.where('active', true),
       { ttl: 30000 }
     );
 
@@ -114,19 +84,23 @@ export class AdvancedComponent {
   }
 
   async runCustomQuery() {
+    const z = this.zero();
+    if (!z) return;
+
     // Run query with custom options
-    const result = await this.zero().run(
-      this.zero().query.users.limit(10),
+    const result = await z.run(
+      z.query.users.limit(10),
       { signal: AbortSignal.timeout(5000) }
     );
     console.log('Query result:', result);
   }
 
   async materializeView() {
+    const z = this.zero();
+    if (!z) return;
+
     // Direct view access for advanced use cases
-    const view = this.zero().materialize(
-      this.zero().query.users
-    );
+    const view = z.materialize(z.query.users);
 
     view.addListener((data, resultType) => {
       console.log('View updated:', data, resultType);
@@ -135,17 +109,15 @@ export class AdvancedComponent {
 }
 ```
 
-## Effect TS API
-
-For functional programming with Effect streams and proper error handling:
+## Effect API (`@nathanld/zero-angular/effect`)
 
 ### Streaming Queries
 
-```typescript
+```ts
 import { Component, inject } from '@angular/core';
 import { Effect, Stream } from 'effect';
-import { ZeroEffect, ZeroServiceLive } from 'zero-angular/effect';
-import { ZeroService } from 'zero-angular';
+import { ZeroEffect, ZeroServiceLive } from '@nathanld/zero-angular/effect';
+import { ZeroService } from '@nathanld/zero-angular';
 
 @Component({...})
 export class EffectComponent {
@@ -172,9 +144,9 @@ export class EffectComponent {
 
 ### Connection State Streaming
 
-```typescript
+```ts
 import { Effect, Stream } from 'effect';
-import { ZeroEffect, ZeroServiceLive } from 'zero-angular/effect';
+import { ZeroEffect, ZeroServiceLive } from '@nathanld/zero-angular/effect';
 
 async function monitorConnection(zeroService: ZeroService) {
   const connectionStream = ZeroEffect.connectionState();
@@ -193,8 +165,9 @@ async function monitorConnection(zeroService: ZeroService) {
 
 ### One-off Queries
 
-```typescript
-import { ZeroEffect, ZeroServiceLive } from 'zero-angular/effect';
+```ts
+import { Effect } from 'effect';
+import { ZeroEffect, ZeroServiceLive } from '@nathanld/zero-angular/effect';
 
 async function fetchUser(zeroService: ZeroService, userId: string) {
   const userQuery = ZeroEffect.runQuery(() => zeroService.zero()!.query.users.where('id', userId));
@@ -211,44 +184,16 @@ async function fetchUser(zeroService: ZeroService, userId: string) {
 }
 ```
 
-### Advanced Effect Patterns
-
-```typescript
-import { Effect, Stream } from 'effect';
-import { ZeroEffect, ZeroServiceLive } from 'zero-angular/effect';
-
-// Complex effect combining multiple operations
-const complexOperation = Effect.gen(function* () {
-  const zeroService = yield* Effect.service(ZeroServiceTag);
-
-  // Run multiple queries in parallel
-  const [users, posts] = yield* Effect.all([
-    ZeroEffect.runQuery(() => zeroService.zero()!.query.users),
-    ZeroEffect.runQuery(() => zeroService.zero()!.query.posts),
-  ]);
-
-  // Preload related data
-  yield* ZeroEffect.preload(() => zeroService.zero()!.query.comments.where('postId', posts[0]?.id));
-
-  return { users, posts };
-});
-
-// Run with service layer
-const result = await Effect.runPromise(
-  complexOperation.pipe(Effect.provide(ZeroServiceLive(zeroService))),
-);
-```
-
 ## API Reference
 
 ### Core Functions
 
-| Function                  | Description                 | Returns                     |
-| ------------------------- | --------------------------- | --------------------------- |
-| `provideZero(options)`    | Configure Zero provider     | `EnvironmentProviders`      |
-| `injectZero()`            | Access Zero instance        | `Signal<Zero \| undefined>` |
-| `injectQuery(queryFn)`    | Reactive query subscription | `QueryResult<T>`            |
-| `injectConnectionState()` | Connection state monitoring | `Signal<ConnectionState>`   |
+| Function                  | Description                 | Returns                        |
+| ------------------------- | --------------------------- | ------------------------------ |
+| `provideZero(options)`    | Configure Zero provider     | `EnvironmentProviders`         |
+| `injectZero()`            | Access Zero instance        | `Signal<Zero \| undefined>`    |
+| `injectQuery(queryFn)`    | Reactive query subscription | `QueryResult<T>`               |
+| `injectConnectionState()` | Connection state monitoring | `Signal<ConnectionState \| undefined>` |
 
 ### QueryResult Interface
 
@@ -265,11 +210,11 @@ interface QueryResult<T> {
 
 | Function                                       | Description             | Returns                    |
 | ---------------------------------------------- | ----------------------- | -------------------------- |
-| `ZeroEffect.query(queryFn)`                    | Streaming query effect  | `Effect<HumanReadable<T>>` |
-| `ZeroEffect.connectionState()`                 | Connection state stream | `Effect<ConnectionState>`  |
+| `ZeroEffect.query(queryFn)`                    | Streaming query stream  | `Stream<HumanReadable<T>>` |
+| `ZeroEffect.connectionState()`                 | Connection state stream | `Stream<ConnectionState>`  |
 | `ZeroEffect.runQuery(queryFn)`                 | One-off query execution | `Effect<HumanReadable<T>>` |
 | `ZeroEffect.preload(queryFn, options?)`        | Preload data effect     | `Effect<PreloadResult>`    |
-| `ZeroEffect.runWithOptions(queryFn, options?)` | Run with custom options | `Effect<T>`                |
+| `ZeroEffect.runWithOptions(queryFn, options?)` | Run with run options    | `Effect<HumanReadable<T>>` |
 
 ### ZeroService Methods
 
@@ -279,62 +224,10 @@ interface QueryResult<T> {
 | `run(query, runOptions?)`  | Execute query      | `Promise<HumanReadable<T>>`                      |
 | `materialize(query)`       | Create view        | `TypedView<HumanReadable<T>>`                    |
 
-## Architecture
-
-### View Management
-
-- **ViewStore**: Deduplicates materialized views by query hash
-- **ViewWrapper**: Manages individual view lifecycle and subscriptions
-- **Angular Signals**: Reactive state updates without manual subscription management
-
-### Effect Integration
-
-- **Streaming**: Reactive data flows with proper error handling
-- **Service Layer**: Dependency injection through Effect's service system
-- **Resource Management**: Automatic cleanup of streams and subscriptions
-
-### Type Safety
-
-- **Strict Generics**: Schema-aware query building and result types
-- **No `any` Types**: Full type safety throughout the API surface
-- **Zero Integration**: Compatible with all Zero client features
-
-## Migration from Other Libraries
-
-### From Zero SolidJS
-
-```typescript
-// SolidJS
-const [users] = useQuery(() => z.query.users);
-const zero = useZero();
-
-// Angular (Promise-based)
-const query = injectQuery(() => zero().query.users);
-const users = query.data;
-const zero = injectZero();
-
-// Angular (Effect-based)
-const usersEffect = ZeroEffect.query(() => zero().query.users);
-```
-
-### From Zero Svelte
-
-```typescript
-// Svelte
-const query = z.createQuery(() => z.query.users);
-const users = $derived(query.data);
-
-// Angular (Promise-based)
-const query = injectQuery(() => zero().query.users);
-const users = query.data;
-
-// Angular (Effect-based)
-const usersEffect = ZeroEffect.query(() => zero().query.users);
-```
-
 ## Contributing
 
-This library maintains complete feature parity with Zero SolidJS and Svelte implementations. All new features should be implemented across all three frameworks for consistency.
+- Please keep the published import paths stable.
+- Add/adjust tests when changing the Effect entrypoint.
 
 ## License
 

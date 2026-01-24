@@ -32,29 +32,31 @@ Local quick steps
 
    ```bash
    bunx ng build zero-angular --configuration=production
+   cd dist/zero-angular
    npm pack
-   # Inspect the .tgz to ensure dist/ and README.md are present and no large caches or node_modules are included
+   # Inspect the .tgz to ensure compiled output + typings are present.
    ```
 
 5. Dry-run publish to validate
 
    ```bash
-   bunx changeset publish --dry-run
-   # or
-   npx @changesets/cli publish --dry-run
+   cd dist/zero-angular
+   npm publish --dry-run
    ```
 
 6. Publish from CI (recommended)
 
    - Add `NPM_TOKEN` secret to the GitHub repository.
-   - Merge PR to `main` to trigger the GitHub Actions workflow `Release` (the workflow runs a dry-run by default).
-   - When you're ready to actually publish, update the workflow to remove `--dry-run` or run `bunx changeset publish` on CI with `NODE_AUTH_TOKEN`/`NPM_TOKEN` configured.
+   - Merge PR to `main` to trigger the GitHub Actions workflow `Release`.
+   - On `push` to `main` (or manual `workflow_dispatch`), the workflow will run `changesets/action` which:
+     - Creates a "Version Packages" PR when changesets are present, or
+     - Publishes to npm when the Version Packages PR is merged.
+   - PRs only run verify (test + build); they do not publish.
 
 Notes
 
-- The root workspace is private; the library package is produced into `dist/zero-angular` by `ng-packagr` and has its own `package.json` inside `dist/zero-angular` created during build.
-- Ensure `dist/` is built and included in the package before publishing.
-- The workflow `release.yml` added to `.github/workflows` runs `changeset version` and `changeset publish --dry-run` using Bun.
+- The root workspace is private; the publishable package is `dist/zero-angular` created by ng-packagr.
+- Versioning must run before building so the dist `package.json` has the right version.
 
 Safety
 

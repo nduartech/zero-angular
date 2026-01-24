@@ -9,7 +9,12 @@
     "tsgo": {
       "implementation": "./tsgo/index.js",
       "schema": "./tsgo/schema.json",
-      "description": "Compile TypeScript using typescript-go (tsgo)"
+      "description": "Typecheck TypeScript using tsc"
+    },
+    "vitest": {
+      "implementation": "./vitest/index.js",
+      "schema": "./vitest/schema.json",
+      "description": "Run unit tests with Vitest"
     }
   }
 }

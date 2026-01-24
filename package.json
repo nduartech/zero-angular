@@ -1,18 +1,21 @@
 {
   "name": "zero-angular-workspace",
   "version": "0.0.1",
+  "private": true,
   "scripts": {
     "ng": "ng",
     "build": "ng build zero-angular",
     "build:lib": "ng build zero-angular",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "watch": "ng build zero-angular --watch --configuration development",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "ng lint",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "changeset": "bunx changeset",
     "changeset:version": "bunx changeset version",
     "changeset:publish:dry": "bunx changeset publish --dry-run",
+    "changeset:publish": "bun run build && npm publish dist/zero-angular --access public",
     "prepare": "bunx ng build zero-angular"
   },
   "dependencies": {
@@ -46,7 +49,8 @@
     "vitest": "^4.0.8"
   },
   "workspaces": [
-    "projects/*"
+    "projects/*",
+    "builders"
   ],
   "packageManager": "bun@1.3.6"
 }

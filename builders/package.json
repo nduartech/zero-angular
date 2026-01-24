@@ -2,5 +2,11 @@
   "name": "zero-angular-builders",
   "version": "0.0.0",
   "description": "Custom builders for zero-angular",
-  "builders": "./builders.json"
+  "private": true,
+  "type": "commonjs",
+  "builders": "./builders.json",
+  "dependencies": {
+    "@angular-devkit/architect": "^0.2101.0",
+    "@angular-devkit/core": "^21.1.0"
+  }
 }

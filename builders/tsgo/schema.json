@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "title": "TypeScript Go (tsgo) Builder",
-  "description": "Compiles TypeScript using the native Go implementation of TypeScript",
+  "title": "TypeScript (tsc) Builder",
+  "description": "Typechecks TypeScript using tsc",
   "type": "object",
   "properties": {
     "tsConfig": {
@@ -17,6 +17,11 @@
       "type": "boolean",
       "description": "Generate declaration files",
       "default": true
+    },
+    "declarationMap": {
+      "type": "boolean",
+      "description": "Generate sourcemaps for d.ts",
+      "default": false
     }
   }
 }

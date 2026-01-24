@@ -13,10 +13,7 @@ const injectZero = <
   MutatorDefs extends CustomMutatorDefs | undefined = undefined,
   ContextType = DefaultContext,
 >(): Signal<ZeroClient<SchemaType, MutatorDefs, ContextType> | undefined> => {
-  const maybeSvc = inject(ZeroService);
-  // `inject` returns unknown at runtime; narrow once to `any` for the return value.
-  // This is intentionally conservative: we avoid repeating `as unknown as`.
-  const svc = maybeSvc as any as ZeroService<SchemaType, MutatorDefs, ContextType>;
+  const svc = inject(ZeroService) as ZeroService<SchemaType, MutatorDefs, ContextType>;
   return svc.zero;
 };
 

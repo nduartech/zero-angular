@@ -1,4 +1,5 @@
-import { makeEnvironmentProviders } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { ENVIRONMENT_INITIALIZER, PLATFORM_ID, inject, makeEnvironmentProviders } from '@angular/core';
 import type { CustomMutatorDefs, DefaultContext, DefaultSchema } from '@rocicorp/zero';
 
 import type { ZeroProviderOptions } from './types';
@@ -9,16 +10,32 @@ const provideZero = <
   MutatorDefs extends CustomMutatorDefs | undefined = undefined,
   ContextType = DefaultContext,
 >(
-  _options: ZeroProviderOptions<SchemaType, MutatorDefs, ContextType>,
+  options: ZeroProviderOptions<SchemaType, MutatorDefs, ContextType>,
 ) => {
-  // Provide the service and configure it at app bootstrap time.
-  const providers = [ZeroService];
+  return makeEnvironmentProviders([
+    ZeroService,
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      multi: true,
+      useValue: () => {
+        const platformId = inject(PLATFORM_ID);
+        const svc = inject(ZeroService) as ZeroService<SchemaType, MutatorDefs, ContextType>;
 
-  // Delay calling provide until the service is instantiated; the consumer should
-  // Set the options by calling ZeroService.provide() in a top-level initializer
-  // Or via APP_INITIALIZER if desired. For convenience we return providers.
+        // If the consumer passed a pre-created client, allow it anywhere.
+        if ('zero' in options) {
+          svc.provide(options);
+          return;
+        }
 
-  return makeEnvironmentProviders(providers);
+        // Constructing a Zero client is browser-only by default.
+        if (!isPlatformBrowser(platformId)) {
+          return;
+        }
+
+        svc.provide(options);
+      },
+    },
+  ]);
 };
 
 export { provideZero };

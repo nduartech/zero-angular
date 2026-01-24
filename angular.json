@@ -15,6 +15,9 @@
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/zero-angular/ng-package.json"
+          },
           "configurations": {
             "production": {
               "tsConfig": "projects/zero-angular/tsconfig.lib.prod.json"
@@ -26,7 +29,7 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:unit-test",
+          "builder": "./builders:vitest",
           "options": {
             "tsConfig": "projects/zero-angular/tsconfig.spec.json"
           }

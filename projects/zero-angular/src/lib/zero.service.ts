@@ -13,8 +13,6 @@ import {
   type Zero,
   Zero as ZeroClass,
 } from '@rocicorp/zero';
-
-import * as QueryFactory from './query-factory';
 import type { ZeroProviderOptions } from './types';
 
 @Injectable({ providedIn: 'root' })
@@ -84,7 +82,7 @@ export class ZeroService<
   >(
     query: QueryOrQueryRequest<TTable, TInput, TOutput, SchemaType, TReturn, TContext>,
     runOptions?: RunOptions,
-  ) {
+  ): Promise<HumanReadable<TReturn>> {
     const zeroClient = this.zero();
     if (!zeroClient) {
       throw new Error('Zero instance not available');
@@ -108,7 +106,7 @@ export class ZeroService<
     return zeroClient.materialize(query as any);
   }
 
-  // Create query helper methods by delegating to `query-factory` to avoid circular imports
+  // Query helper methods for compatibility with other Zero bindings.
   q<
     TTable extends keyof SchemaType['tables'] & string,
     TInput extends ReadonlyJSONValue | undefined,
@@ -116,11 +114,7 @@ export class ZeroService<
     TReturn = PullRow<TTable, SchemaType>,
     TContext = ContextType,
   >(query: QueryOrQueryRequest<TTable, TInput, TOutput, SchemaType, TReturn, TContext>) {
-    // Delegate to query-factory to centralize query construction and avoid cycles
-    // Note: `query-factory` uses DefaultSchema in its types; this method is a typed passthrough.
-    // Delegate to QueryFactory.q with a narrow passthrough
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return QueryFactory.q(query as any);
+    return query;
   }
 
   createQuery<
@@ -130,6 +124,6 @@ export class ZeroService<
     TReturn = PullRow<TTable, SchemaType>,
     TContext = ContextType,
   >(query: QueryOrQueryRequest<TTable, TInput, TOutput, SchemaType, TReturn, TContext>) {
-    return QueryFactory.createQuery(query as any);
+    return query;
   }
 }

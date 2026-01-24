@@ -1,39 +1,45 @@
-import { Stream } from 'effect';
+import { Effect, Stream } from 'effect';
 import { describe, expect, it } from 'vitest';
 
-import { connectionState, query, runStreamWithZero } from '../effect/zero-effect';
+import { ZeroServiceTag, connectionState, query, runQuery, runStreamWithZero } from '../../../effect/src/lib/zero-effect';
 
 // Minimal mock Zero client
 const makeMockZero = () => {
-  let listener: ((s: any) => void) | null = null;
+  let queryListener: ((s: any) => void) | null = null;
+  let connListener: ((s: any) => void) | null = null;
   return {
-    addConnectionListener: (cb: any) => {
-      listener = cb;
-      return () => {
-        listener = null;
-      };
+    connection: {
+      state: {
+        current: 'unknown' as any,
+        subscribe: (cb: any) => {
+          connListener = cb;
+          return () => {
+            connListener = null;
+          };
+        },
+      },
     },
     materialize: (_q: any) => ({
       addListener: (cb: any) => {
-        listener = cb;
+        queryListener = cb;
         return () => {
-          listener = null;
+          queryListener = null;
         };
       },
       destroy: () => {},
     }),
+    run: async (_q: any) => [{ some: 'ran' }],
     // Helpers for tests
-    emit: (v: any) => {
-      if (listener) {
-        (listener as any)(v);
-      }
-    },
+    emitQuery: (v: any) => queryListener?.(v, 'complete'),
+    emitConn: (v: any) => connListener?.(v),
   };
 };
 
 const mockZero = makeMockZero();
 const zeroService: any = {
   zero: () => mockZero as any,
+  run: (...args: any[]) => (mockZero as any).run(...args),
+  preload: (..._args: any[]) => ({ cleanup: () => {}, complete: Promise.resolve() }),
 };
 
 describe('zero-effect streams', () => {
@@ -43,9 +49,9 @@ describe('zero-effect streams', () => {
     // Allow stream registration to start
     await Promise.resolve();
     // Emit one snapshot then await collected result
-    (mockZero as any).emit({ some: 'snap' });
+    (mockZero as any).emitQuery({ some: 'snap' });
     const collected = await p;
-    expect(collected).toBeDefined();
+    expect(collected.length).toBe(1);
   });
 
   it('connectionState stream emits state', async () => {
@@ -53,8 +59,14 @@ describe('zero-effect streams', () => {
     const p = runStreamWithZero(stream, zeroService);
     await Promise.resolve();
     // Trigger a connection event
-    (mockZero as any).emit('online');
+    (mockZero as any).emitConn('online');
     const res = await p;
-    expect(res).toBeDefined();
+    expect(res.length).toBe(1);
+  });
+
+  it('runQuery runs a one-off query', async () => {
+    const eff = runQuery(() => ({ some: 'query' }) as any);
+    const res = await Effect.runPromise(eff.pipe(Effect.provideService(ZeroServiceTag, zeroService)));
+    expect(res).toEqual([{ some: 'ran' }]);
   });
 });

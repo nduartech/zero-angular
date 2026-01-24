@@ -8,6 +8,7 @@
 
 # Node
 /node_modules
+**/node_modules/
 npm-debug.log
 yarn-error.log
 
@@ -38,6 +39,12 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+
+# Local tooling
+.opencode/
+
+# Nested lockfiles (standardize on repo-root bun.lock)
+projects/**/bun.lock
 
 # System files
 .DS_Store

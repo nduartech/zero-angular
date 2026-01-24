@@ -3,12 +3,6 @@
   "version": "0.0.1",
   "sideEffects": false,
   "description": "Zero integration utilities and components for Angular",
-  "main": "dist/zero-angular/bundles/zero-angular.umd.js",
-  "module": "dist/zero-angular/fesm2015/zero-angular.mjs",
-  "types": "dist/zero-angular/zero-angular.d.ts",
-  "files": [
-    "dist/"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nduartech/zero-angular.git"
